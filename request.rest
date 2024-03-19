@@ -1,0 +1,52 @@
+###
+
+GET http://localhost:3000/student
+
+###
+GET http://localhost:3000/student/1236
+
+###
+GET http://localhost:3000/student?name=John
+
+###
+POST http://localhost:3000/student
+Content-Type: application/json
+
+{
+    "_id": "1236",
+    "name": "Moshe",
+    "age": "20"
+}
+
+###
+PUT http://localhost:3000/student/
+Content-Type: application/json
+
+{
+    "_id": "1236",
+    "name": "Moshe",
+    "age": "20"
+}
+
+###
+DELETE http://localhost:3000/student/
+Content-Type: application/json
+
+{
+    "_id": "1236",
+    "name": "Moshe",
+    "age": "20"
+}
+
+###
+GET http://localhost:3000/post
+
+###
+POST http://localhost:3000/post
+Content-Type: application/json
+
+{
+    "title": "Post 1",
+    "message": "Hello World",
+    "owner": "Chen"
+}
