@@ -6,15 +6,15 @@ const getStudent = async (req, res) => {
         var students
         if (req.params.id != null){
             students = await Student.findById(req.params.id);
-            res.status(200).send(student);
+            res.status(200).send(students);
         }else{
             if(req.query.name != null){
                 students = await Student.find({name: req.query.name});
             }else{
                 students = await Student.find();
             }
+            res.status(200).send(students);
         }
-        res.status(200).send(students);
     }catch(err){
         res.status(500).send(err.message);
     }

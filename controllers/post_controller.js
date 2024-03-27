@@ -6,7 +6,6 @@ const get = async (req, res) => {
         var posts
         if (req.params.id != null){
             posts = await Post.findById(req.params.id);
-            res.status(200).send(post);
         }else{
                 posts = await Post.find();
             }

@@ -3,7 +3,7 @@
 GET http://localhost:3000/student
 
 ###
-GET http://localhost:3000/student/1236
+GET http://localhost:3000/student/12345
 
 ###
 GET http://localhost:3000/student?name=John
