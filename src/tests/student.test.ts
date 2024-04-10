@@ -2,11 +2,21 @@ import request from 'supertest';
 import init from '../App';
 import mongoose from 'mongoose';
 import Student from '../models/student_model';
+import User from '../models/user_model';
 
 const testStudent = {
     _id: "12345",
     name: 'John',
     age: 20
+};
+type TestUser= {
+    email: string;
+    password: string;
+    token?: string;
+}
+const user:TestUser = {
+    "email": "testStudent@test.com",
+    "password": "1234"
 };
 
 let app;
@@ -14,6 +24,10 @@ beforeAll(async () => {
     app = await init();
     console.log('before all');
     await Student.deleteMany();
+    await User.deleteMany({"email": user.email});
+    await request(app).post('/auth/register').send(user);
+    const res = await request(app).post('/auth/login').send(user);
+    user.token = res.body.token;
 });
 
 afterAll(async () => {
@@ -22,14 +36,18 @@ afterAll(async () => {
 
 describe('Student Tests', () => {
     test('test student get', async () => {
-        const res = await request(app).get('/student');
+        const res = await request(app)
+            .get('/student')
+            .set('Authorization', 'Bearer ' + user.token)
         expect(res.statusCode).toEqual(200);
         expect(res.body).toEqual([]);
     });
 
     //test the post student api
     test('test student post', async () => {
-        const res = await request(app).post('/student').send(testStudent);
+        const res = await request(app).post('/student')
+            .set('Authorization', 'Bearer ' + user.token)
+            .send(testStudent);
         expect(res.statusCode).toEqual(201);
         expect(res.body.name).toEqual(testStudent.name);
         expect(res.body.age).toEqual(testStudent.age);
@@ -37,14 +55,18 @@ describe('Student Tests', () => {
     });
     //test the get student api
     test('test student get', async () => {
-        const res = await request(app).get('/student');
+        const res = await request(app)
+            .get('/student')
+            .set('Authorization', 'Bearer ' + user.token)
         expect(res.statusCode).toEqual(200);
         expect(res.body.length).toEqual(1);
     });
 
     //test the get by id student api
     test('test student get by id', async () => {
-        const res = await request(app).get('/student/'+testStudent._id);
+        const res = await request(app)
+            .get('/student/'+testStudent._id)
+            .set('Authorization', 'Bearer ' + user.token)
         expect(res.statusCode).toEqual(200);
         expect(res.body.name).toEqual(testStudent.name);
         expect(res.body.age).toEqual(testStudent.age);
