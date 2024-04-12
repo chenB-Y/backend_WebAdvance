@@ -31,9 +31,34 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const hashedPassword = yield bcrypt_1.default.hash(password, salt);
         const newUser = yield user_model_1.default.create({ email: email, password: hashedPassword });
         res.send(newUser);
+        // add login logic here
+        const tokens = yield generateTokens(newUser);
+        if (tokens == null) {
+            return res.status(400).send('Error generating tokens');
+        }
+        return res.status(200).send(tokens);
     }
     catch (err) {
-        return res.status(500).send(err.message);
+        return res.status(500);
+    }
+});
+const generateTokens = (user) => __awaiter(void 0, void 0, void 0, function* () {
+    const accessToken = jsonwebtoken_1.default.sign({ id_: user._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.ACCESS_TOKEN_EXPIRATION });
+    const random = Math.floor(Math.random() * 1000000).toString();
+    const refreshToken = jsonwebtoken_1.default.sign({ id_: user._id, random: random }, process.env.ACCESS_TOKEN_SECRET, {});
+    if (user.tokens == null) {
+        user.tokens = [];
+    }
+    user.tokens.push(refreshToken);
+    try {
+        yield user.save();
+        return {
+            "accessToken": accessToken,
+            "refreshToken": refreshToken
+        };
+    }
+    catch (err) {
+        return null;
     }
 });
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -51,19 +76,84 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (!isMatch) {
             res.status(400).send("Invalid Credentials");
         }
-        const accessToken = jsonwebtoken_1.default.sign({ id_: user._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
-        return res.status(200).send({ token: accessToken });
+        const tokens = yield generateTokens(user);
+        if (tokens == null) {
+            return res.status(400).send("Error generating tokens");
+        }
+        return res.status(200).send(tokens);
     }
     catch (err) {
         return res.status(500).send(err.message);
     }
 });
-const logout = (req, res) => {
-    res.send('logout');
-};
-const authMiddleware = (req, res, next) => {
+const extractToken = (req) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
+    return token;
+};
+const refresh = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const refreshToken = extractToken(req);
+    if (refreshToken == null) {
+        return res.status(401).send('No token provided');
+    }
+    try {
+        jsonwebtoken_1.default.verify(refreshToken, process.env.ACCESS_TOKEN_SECRET, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
+            if (err) {
+                return res.status(401).send('Token is not valid');
+            }
+            const id = data.id_;
+            const user = yield user_model_1.default.findOne({ _id: id });
+            if (user == null) {
+                return res.status(401).send('User not found');
+            }
+            if (!user.tokens.includes(refreshToken)) {
+                user.tokens = [];
+                yield user.save();
+                return res.status(401).send('Invalid token');
+            }
+            user.tokens = user.tokens.filter((token) => token !== refreshToken);
+            const tokens = yield generateTokens(user);
+            if (tokens == null) {
+                return res.status(400).send('Error generating tokens');
+            }
+            return res.status(200).send(tokens);
+        }));
+    }
+    catch (err) {
+        return res.status(500).send(err.message);
+    }
+});
+const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const refreshToken = extractToken(req);
+    if (refreshToken == null) {
+        return res.status(401).send('No token provided');
+    }
+    try {
+        jsonwebtoken_1.default.verify(refreshToken, process.env.ACCESS_TOKEN_SECRET, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
+            if (err) {
+                return res.status(401).send('Token is not valid');
+            }
+            const id = data.id_;
+            const user = yield user_model_1.default.findOne({ _id: id });
+            if (user == null) {
+                return res.status(401).send('User not found');
+            }
+            if (!user.tokens.includes(refreshToken)) {
+                user.tokens = [];
+                yield user.save();
+                return res.status(401).send('Invalid token');
+            }
+            user.tokens = user.tokens.filter((token) => token !== refreshToken);
+            yield user.save();
+            return res.status(200).send();
+        }));
+    }
+    catch (err) {
+        return res.status(500).send(err.message);
+    }
+});
+const authMiddleware = (req, res, next) => {
+    const token = extractToken(req);
     if (token == null) {
         return res.status(401).send('No token provided');
     }
@@ -81,6 +171,7 @@ exports.default = {
     register,
     login,
     logout,
-    authMiddleware: exports.authMiddleware
+    authMiddleware: exports.authMiddleware,
+    refresh
 };
 //# sourceMappingURL=auth_controller.js.map

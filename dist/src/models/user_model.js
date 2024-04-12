@@ -12,6 +12,9 @@ const UserSchema = new mongoose_1.default.Schema({
     password: {
         type: String,
         required: true
+    },
+    tokens: {
+        type: [String]
     }
 });
 exports.default = mongoose_1.default.model('User', UserSchema);
