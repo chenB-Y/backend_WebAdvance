@@ -145,7 +145,7 @@ const logout = async (req: Request, res: Response) => {
     }
 }   
 
-export const authMiddleware = (req: Request, res: Response, next:NextFunction) => {
+export const authMiddleware = (req: AuthRequest, res: Response, next:NextFunction) => {
     const token = extractToken(req);
     if (token == null){
         return res.status(401).send('No token provided');
