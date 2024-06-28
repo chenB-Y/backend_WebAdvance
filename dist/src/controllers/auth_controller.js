@@ -29,14 +29,17 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         const salt = yield bcrypt_1.default.genSalt(10);
         const hashedPassword = yield bcrypt_1.default.hash(password, salt);
-        const newUser = yield user_model_1.default.create({ email: email, password: hashedPassword });
-        res.send(newUser);
+        const newUser = yield user_model_1.default.create({
+            email: email,
+            password: hashedPassword,
+        });
+        //res.send(newUser);
         // add login logic here
         const tokens = yield generateTokens(newUser);
         if (tokens == null) {
             return res.status(400).send('Error generating tokens');
         }
-        return res.status(200).send(tokens);
+        return res.status(200).send(newUser);
     }
     catch (err) {
         return res.status(500);
@@ -53,8 +56,8 @@ const generateTokens = (user) => __awaiter(void 0, void 0, void 0, function* () 
     try {
         yield user.save();
         return {
-            "accessToken": accessToken,
-            "refreshToken": refreshToken
+            accessToken: accessToken,
+            refreshToken: refreshToken,
         };
     }
     catch (err) {
@@ -74,11 +77,11 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         const isMatch = yield bcrypt_1.default.compare(password, user.password);
         if (!isMatch) {
-            res.status(400).send("Invalid Credentials");
+            res.status(400).send('Invalid Credentials');
         }
         const tokens = yield generateTokens(user);
         if (tokens == null) {
-            return res.status(400).send("Error generating tokens");
+            return res.status(400).send('Error generating tokens');
         }
         return res.status(200).send(tokens);
     }
@@ -94,7 +97,7 @@ const extractToken = (req) => {
 const refresh = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const refreshToken = extractToken(req);
     if (refreshToken == null) {
-        return res.status(401).send('No token provided');
+        return res.status(401).send('No token provided1');
     }
     try {
         jsonwebtoken_1.default.verify(refreshToken, process.env.ACCESS_TOKEN_SECRET, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
@@ -126,7 +129,7 @@ const refresh = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const refreshToken = extractToken(req);
     if (refreshToken == null) {
-        return res.status(401).send('No token provided');
+        return res.status(401).send('No token provided2');
     }
     try {
         jsonwebtoken_1.default.verify(refreshToken, process.env.ACCESS_TOKEN_SECRET, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
@@ -155,7 +158,7 @@ const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 const authMiddleware = (req, res, next) => {
     const token = extractToken(req);
     if (token == null) {
-        return res.status(401).send('No token provided');
+        return res.status(401).send('No token provided3');
     }
     jsonwebtoken_1.default.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, data) => {
         if (err) {
@@ -172,6 +175,6 @@ exports.default = {
     login,
     logout,
     authMiddleware: exports.authMiddleware,
-    refresh
+    refresh,
 };
 //# sourceMappingURL=auth_controller.js.map

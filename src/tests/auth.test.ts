@@ -1,6 +1,6 @@
 import request from 'supertest';
 import init from '../App';
-import mongoose, { set } from 'mongoose';
+import mongoose from 'mongoose';
 import User from '../models/user_model';
 
 type TestUser= {

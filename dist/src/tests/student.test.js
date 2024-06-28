@@ -18,20 +18,20 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const student_model_1 = __importDefault(require("../models/student_model"));
 const user_model_1 = __importDefault(require("../models/user_model"));
 const testStudent = {
-    _id: "12345",
+    _id: '12345',
     name: 'John',
-    age: 20
+    age: 20,
 };
 const user = {
-    "email": "testStudent@test.com",
-    "password": "1234"
+    email: 'testStudent@test.com',
+    password: '1234',
 };
 let app;
 beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
     app = yield (0, App_1.default)();
     console.log('before all');
     yield student_model_1.default.deleteMany();
-    yield user_model_1.default.deleteMany({ "email": user.email });
+    yield user_model_1.default.deleteMany({ email: user.email });
     yield (0, supertest_1.default)(app).post('/auth/register').send(user);
     const res = yield (0, supertest_1.default)(app).post('/auth/login').send(user);
     user.accessToken = res.body.accessToken;
@@ -49,7 +49,8 @@ describe('Student Tests', () => {
     }));
     //test the post student api
     test('test student post', () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(app).post('/student')
+        const res = yield (0, supertest_1.default)(app)
+            .post('/student')
             .set('Authorization', 'Bearer ' + user.accessToken)
             .send(testStudent);
         expect(res.statusCode).toEqual(201);
@@ -70,6 +71,7 @@ describe('Student Tests', () => {
         const res = yield (0, supertest_1.default)(app)
             .get('/student/' + testStudent._id)
             .set('Authorization', 'Bearer ' + user.accessToken);
+        console.log(user.accessToken);
         expect(res.statusCode).toEqual(200);
         expect(res.body.name).toEqual(testStudent.name);
         expect(res.body.age).toEqual(testStudent.age);
