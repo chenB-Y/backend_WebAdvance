@@ -6,8 +6,10 @@ import { Document } from 'mongoose';
 export type AuthRequest = Request & { user: { _id: string } };
 
 const register = async (req: AuthRequest, res: Response) => {
+  const imgUrl = req.body.imgUrl;
   const email = req.body.email;
   const password = req.body.password;
+  const username = req.body.username;
   if (email === undefined || password === undefined) {
     return res.status(400).send('Email or password not provided');
   }
@@ -20,7 +22,9 @@ const register = async (req: AuthRequest, res: Response) => {
     const hashedPassword = await bcrypt.hash(password, salt);
     const newUser = await User.create({
       email: email,
+      username: username,
       password: hashedPassword,
+      imgUrl: imgUrl,
     });
     //res.send(newUser);
     // add login logic here
@@ -76,7 +80,7 @@ const login = async (req: Request, res: Response) => {
     }
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      res.status(400).send('Invalid Credentials');
+      return res.status(400).send('Invalid Credentials');
     }
 
     const tokens = await generateTokens(user);
