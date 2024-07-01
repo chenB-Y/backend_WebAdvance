@@ -7,15 +7,22 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const UserSchema = new mongoose_1.default.Schema({
     email: {
         type: String,
-        required: true
+        required: true,
+    },
+    username: {
+        type: String,
+        // required: true,
     },
     password: {
         type: String,
-        required: true
+        required: true,
+    },
+    imgUrl: {
+        type: String,
     },
     tokens: {
-        type: [String]
-    }
+        type: [String],
+    },
 });
 exports.default = mongoose_1.default.model('User', UserSchema);
 //# sourceMappingURL=user_model.js.map

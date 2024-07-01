@@ -16,9 +16,39 @@ exports.authMiddleware = void 0;
 const user_model_1 = __importDefault(require("../models/user_model"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const google_auth_library_1 = require("google-auth-library");
+const client = new google_auth_library_1.OAuth2Client();
+const googleSignin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(req.body);
+    try {
+        const ticket = yield client.verifyIdToken({
+            idToken: req.body.credential,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        const payload = ticket.getPayload();
+        const email = payload === null || payload === void 0 ? void 0 : payload.email;
+        if (email != null) {
+            let user = yield user_model_1.default.findOne({ email: email });
+            if (user == null) {
+                user = yield user_model_1.default.create({
+                    email: email,
+                    password: '0',
+                    imgUrl: payload === null || payload === void 0 ? void 0 : payload.picture,
+                });
+            }
+            const tokens = yield generateTokens(user);
+            res.status(200).send(Object.assign({ email: user.email, _id: user._id, imgUrl: user.imgUrl }, tokens));
+        }
+    }
+    catch (err) {
+        return res.status(400).send(err.message);
+    }
+});
 const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const imgUrl = req.body.imgUrl;
     const email = req.body.email;
     const password = req.body.password;
+    const username = req.body.username;
     if (email === undefined || password === undefined) {
         return res.status(400).send('Email or password not provided');
     }
@@ -31,7 +61,9 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const hashedPassword = yield bcrypt_1.default.hash(password, salt);
         const newUser = yield user_model_1.default.create({
             email: email,
+            username: username,
             password: hashedPassword,
+            imgUrl: imgUrl,
         });
         //res.send(newUser);
         // add login logic here
@@ -39,7 +71,7 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (tokens == null) {
             return res.status(400).send('Error generating tokens');
         }
-        return res.status(200).send(newUser);
+        return res.status(200).send(tokens);
     }
     catch (err) {
         return res.status(500);
@@ -77,9 +109,11 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         const isMatch = yield bcrypt_1.default.compare(password, user.password);
         if (!isMatch) {
-            res.status(400).send('Invalid Credentials');
+            return res.status(400).send('Invalid Credentials');
         }
         const tokens = yield generateTokens(user);
+        // console.log('tokens:', tokens);
+        console.log('user:', user);
         if (tokens == null) {
             return res.status(400).send('Error generating tokens');
         }
@@ -127,15 +161,19 @@ const refresh = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('111111111111111111111111111');
     const refreshToken = extractToken(req);
     if (refreshToken == null) {
         return res.status(401).send('No token provided2');
     }
+    console.log('2222222222222222222222222222222222222222222');
     try {
         jsonwebtoken_1.default.verify(refreshToken, process.env.ACCESS_TOKEN_SECRET, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
+            console.log('333333333333333333333333333333333333333333');
             if (err) {
                 return res.status(401).send('Token is not valid');
             }
+            console.log('55555555555555555555555555555');
             const id = data.id_;
             const user = yield user_model_1.default.findOne({ _id: id });
             if (user == null) {
@@ -171,6 +209,7 @@ const authMiddleware = (req, res, next) => {
 };
 exports.authMiddleware = authMiddleware;
 exports.default = {
+    googleSignin,
     register,
     login,
     logout,

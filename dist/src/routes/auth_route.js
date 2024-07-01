@@ -118,6 +118,7 @@ router.get('/refresh', auth_controller_1.default.refresh);
  *           200:
  *               description: logout completed successfully
  */
+router.post('/google', auth_controller_1.default.googleSignin);
 router.get('/logout', auth_controller_1.default.logout);
 exports.default = router;
 //# sourceMappingURL=auth_route.js.map

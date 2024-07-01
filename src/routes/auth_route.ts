@@ -122,6 +122,8 @@ router.get('/refresh', AuthController.refresh);
  *               description: logout completed successfully
  */
 
+router.post('/google', AuthController.googleSignin);
+
 router.get('/logout', AuthController.logout);
 
 export default router;

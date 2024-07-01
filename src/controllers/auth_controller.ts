@@ -3,7 +3,41 @@ import User, { IUser } from '../models/user_model';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { Document } from 'mongoose';
+import { OAuth2Client } from 'google-auth-library';
+
 export type AuthRequest = Request & { user: { _id: string } };
+
+const client = new OAuth2Client();
+const googleSignin = async (req: Request, res: Response) => {
+  console.log(req.body);
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: req.body.credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    const email = payload?.email;
+    if (email != null) {
+      let user = await User.findOne({ email: email });
+      if (user == null) {
+        user = await User.create({
+          email: email,
+          password: '0',
+          imgUrl: payload?.picture,
+        });
+      }
+      const tokens = await generateTokens(user);
+      res.status(200).send({
+        email: user.email,
+        _id: user._id,
+        imgUrl: user.imgUrl,
+        ...tokens,
+      });
+    }
+  } catch (err) {
+    return res.status(400).send(err.message);
+  }
+};
 
 const register = async (req: AuthRequest, res: Response) => {
   const imgUrl = req.body.imgUrl;
@@ -194,6 +228,7 @@ export const authMiddleware = (
 };
 
 export default {
+  googleSignin,
   register,
   login,
   logout,
