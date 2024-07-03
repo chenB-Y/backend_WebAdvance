@@ -7,6 +7,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const router = express_1.default.Router();
 const auth_controller_1 = __importDefault(require("../controllers/auth_controller"));
+const auth_controller_2 = require("../controllers/auth_controller");
 /**
  * @swagger
  * tags:
@@ -120,5 +121,6 @@ router.get('/refresh', auth_controller_1.default.refresh);
  */
 router.post('/google', auth_controller_1.default.googleSignin);
 router.get('/logout', auth_controller_1.default.logout);
+router.put('/updateProfile', auth_controller_2.authMiddleware, auth_controller_1.default.updateProfile);
 exports.default = router;
 //# sourceMappingURL=auth_route.js.map

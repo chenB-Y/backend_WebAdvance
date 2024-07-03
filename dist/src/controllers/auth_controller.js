@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.authMiddleware = void 0;
+exports.updateProfile = exports.authMiddleware = void 0;
 const user_model_1 = __importDefault(require("../models/user_model"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -78,6 +78,7 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 const generateTokens = (user) => __awaiter(void 0, void 0, void 0, function* () {
+    user.tokens = [];
     const accessToken = jsonwebtoken_1.default.sign({ id_: user._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.ACCESS_TOKEN_EXPIRATION });
     const random = Math.floor(Math.random() * 1000000).toString();
     const refreshToken = jsonwebtoken_1.default.sign({ id_: user._id, random: random }, process.env.ACCESS_TOKEN_SECRET, {});
@@ -112,7 +113,6 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             return res.status(400).send('Invalid Credentials');
         }
         const tokens = yield generateTokens(user);
-        // console.log('tokens:', tokens);
         console.log('user:', user);
         if (tokens == null) {
             return res.status(400).send('Error generating tokens');
@@ -161,19 +161,15 @@ const refresh = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('111111111111111111111111111');
     const refreshToken = extractToken(req);
     if (refreshToken == null) {
         return res.status(401).send('No token provided2');
     }
-    console.log('2222222222222222222222222222222222222222222');
     try {
         jsonwebtoken_1.default.verify(refreshToken, process.env.ACCESS_TOKEN_SECRET, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
-            console.log('333333333333333333333333333333333333333333');
             if (err) {
                 return res.status(401).send('Token is not valid');
             }
-            console.log('55555555555555555555555555555');
             const id = data.id_;
             const user = yield user_model_1.default.findOne({ _id: id });
             if (user == null) {
@@ -208,11 +204,16 @@ const authMiddleware = (req, res, next) => {
     });
 };
 exports.authMiddleware = authMiddleware;
+const updateProfile = () => {
+    // update profile
+};
+exports.updateProfile = updateProfile;
 exports.default = {
     googleSignin,
     register,
     login,
     logout,
+    updateProfile: exports.updateProfile,
     authMiddleware: exports.authMiddleware,
     refresh,
 };

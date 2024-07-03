@@ -4,6 +4,8 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { Document } from 'mongoose';
 import { OAuth2Client } from 'google-auth-library';
+import fs from 'fs';
+import path from 'path';
 
 export type AuthRequest = Request & { user: { _id: string } };
 
@@ -74,7 +76,8 @@ const register = async (req: AuthRequest, res: Response) => {
 
 const generateTokens = async (
   user: Document<unknown, object, IUser> & IUser & Required<{ _id: string }>
-): Promise<{ accessToken: string; refreshToken: string }> => {
+): Promise<{ accessToken: string; refreshToken: string; userID: string }> => {
+  user.tokens = [];
   const accessToken = jwt.sign(
     { id_: user._id },
     process.env.ACCESS_TOKEN_SECRET,
@@ -95,6 +98,7 @@ const generateTokens = async (
     return {
       accessToken: accessToken,
       refreshToken: refreshToken,
+      userID: user._id,
     };
   } catch (err) {
     return null;
@@ -118,7 +122,6 @@ const login = async (req: Request, res: Response) => {
     }
 
     const tokens = await generateTokens(user);
-    // console.log('tokens:', tokens);
     console.log('user:', user);
     if (tokens == null) {
       return res.status(400).send('Error generating tokens');
@@ -227,11 +230,61 @@ export const authMiddleware = (
   );
 };
 
+export const getUserData = async (req: Request, res: Response) => {
+  if (req.params.id != null) {
+    const user = await User.findById(req.params.id);
+    if (user == null) {
+      return res.status(404).send('User not found');
+    }
+    console.log('user:', user);
+    return res.status(200).send(user);
+  }
+};
+
+export const updateProfile = async (req: Request, res: Response) => {
+  const { userID, newUsername, url } = req.body;
+  console.log('userID:', userID, 'newUsername:', newUsername, 'url:', url);
+
+  try {
+    const user = await User.findById(userID);
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    // If there's a current image URL, remove the old image file
+    if (user.imgUrl) {
+      const imagePath = path.join(
+        './public',
+        user.imgUrl.split('localhost:3000/')[1]
+      );
+      fs.unlink(imagePath, (err) => {
+        if (err) {
+          console.error('Error deleting old image:', err);
+        } else {
+          console.log('Old image deleted:', imagePath);
+        }
+      });
+    }
+
+    // Update the username and image URL fields
+    if (newUsername) user.username = newUsername;
+    if (url) user.imgUrl = url;
+    await user.save(); // Save the updated user object
+
+    return res.status(200).send(user);
+  } catch (err) {
+    console.error('Error updating profile:', err);
+    return res.status(500).send('Error updating profile');
+  }
+};
+
 export default {
   googleSignin,
   register,
   login,
   logout,
+  getUserData,
+  updateProfile,
   authMiddleware,
   refresh,
 };

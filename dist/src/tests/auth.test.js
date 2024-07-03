@@ -17,14 +17,14 @@ const App_1 = __importDefault(require("../App"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const user_model_1 = __importDefault(require("../models/user_model"));
 const user = {
-    "email": "test@test.com",
-    "password": "1234"
+    email: 'test@test.com',
+    password: '1234',
 };
 let app;
 beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
     app = yield (0, App_1.default)();
     console.log('before all');
-    yield user_model_1.default.deleteMany({ "email": user.email });
+    yield user_model_1.default.deleteMany({ email: user.email });
 }));
 afterAll(() => __awaiter(void 0, void 0, void 0, function* () {
     yield mongoose_1.default.connection.close();
@@ -51,21 +51,31 @@ describe('Register Tests', () => {
     test('Middleware', () => __awaiter(void 0, void 0, void 0, function* () {
         const res = yield (0, supertest_1.default)(app).get('/student').send();
         expect(res.statusCode).not.toEqual(200);
-        const res2 = yield (0, supertest_1.default)(app).get('/student').set('Authorization', 'Bearer ' + user.accessToken).send();
+        const res2 = yield (0, supertest_1.default)(app)
+            .get('/student')
+            .set('Authorization', 'Bearer ' + user.accessToken)
+            .send();
         expect(res2.statusCode).toEqual(200);
-        yield (0, supertest_1.default)(app).post('/post').set('Authorization', 'Bearer ' + user.accessToken).send({
-            "title": "test",
-            "message": "test",
-            "owner": "12345"
+        yield (0, supertest_1.default)(app)
+            .post('/post')
+            .set('Authorization', 'Bearer ' + user.accessToken)
+            .send({
+            title: 'test',
+            message: 'test',
+            owner: '12345',
         });
         expect(res2.statusCode).toEqual(200);
     }));
     jest.setTimeout(10000);
     test('Refresh Token', () => __awaiter(void 0, void 0, void 0, function* () {
-        yield new Promise(r => setTimeout(r, 6000));
-        const res2 = yield (0, supertest_1.default)(app).get('/student').set('Authorization', 'Bearer ' + user.accessToken).send();
+        yield new Promise((r) => setTimeout(r, 6000));
+        const res2 = yield (0, supertest_1.default)(app)
+            .get('/student')
+            .set('Authorization', 'Bearer ' + user.accessToken)
+            .send();
         expect(res2.statusCode).not.toEqual(200);
-        const res = yield (0, supertest_1.default)(app).get('/auth/refresh')
+        const res = yield (0, supertest_1.default)(app)
+            .get('/auth/refresh')
             .set('Authorization', 'Bearer ' + user.refreshToken)
             .send();
         expect(res.statusCode).toEqual(200);
@@ -73,20 +83,26 @@ describe('Register Tests', () => {
         expect(res.body).toHaveProperty('refreshToken');
         user.accessToken = res.body.accessToken;
         user.refreshToken = res.body.refreshToken;
-        const res3 = yield (0, supertest_1.default)(app).get('/student').set('Authorization', 'Bearer ' + user.accessToken).send();
+        const res3 = yield (0, supertest_1.default)(app)
+            .get('/student')
+            .set('Authorization', 'Bearer ' + user.accessToken)
+            .send();
         expect(res3.statusCode).toEqual(200);
     }));
     test('Refresh Token hacked', () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(app).get('/auth/refresh')
+        const res = yield (0, supertest_1.default)(app)
+            .get('/auth/refresh')
             .set('Authorization', 'Bearer ' + user.refreshToken)
             .send();
         expect(res.statusCode).toEqual(200);
         const newRefreshToken = res.body.refreshToken;
-        const res2 = yield (0, supertest_1.default)(app).get('/auth/refresh')
+        const res2 = yield (0, supertest_1.default)(app)
+            .get('/auth/refresh')
             .set('Authorization', 'Bearer ' + user.refreshToken)
             .send();
         expect(res2.statusCode).not.toEqual(200);
-        const res3 = yield (0, supertest_1.default)(app).get('/auth/refresh')
+        const res3 = yield (0, supertest_1.default)(app)
+            .get('/auth/refresh')
             .set('Authorization', 'Bearer ' + newRefreshToken)
             .send();
         expect(res3.statusCode).not.toEqual(200);
@@ -98,11 +114,13 @@ describe('Register Tests', () => {
         expect(res.body).toHaveProperty('refreshToken');
         user.accessToken = res.body.accessToken;
         user.refreshToken = res.body.refreshToken;
-        const res2 = yield (0, supertest_1.default)(app).get('/auth/logout')
+        const res2 = yield (0, supertest_1.default)(app)
+            .get('/auth/logout')
             .set('Authorization', 'Bearer ' + user.refreshToken)
             .send();
         expect(res2.statusCode).toEqual(200);
-        const res3 = yield (0, supertest_1.default)(app).get('/auth/refresh')
+        const res3 = yield (0, supertest_1.default)(app)
+            .get('/auth/refresh')
             .set('Authorization', 'Bearer ' + user.refreshToken)
             .send();
         expect(res3.statusCode).not.toEqual(200);

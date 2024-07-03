@@ -2,6 +2,7 @@ import express, { Express } from 'express';
 const app = express();
 import env from 'dotenv';
 import cors from 'cors';
+import path from 'path';
 env.config();
 import bodyParser from 'body-parser';
 import studentRoute from './routes/student_route';
@@ -18,6 +19,7 @@ const init = () => {
     mongoose.connect(process.env.DATABASE_URL).then(() => {
       app.use(bodyParser.urlencoded({ extended: true }));
       app.use(bodyParser.json());
+      app.use(express.static(path.join(__dirname, '../public')));
       app.use(cors());
       app.use((req, res, next) => {
         res.header('Access-Control-Allow-Origin', '*');
@@ -25,11 +27,10 @@ const init = () => {
         res.header('Access-Control-Allow-Headers', '*');
         next();
       });
-
       app.use('/auth', authRoute);
       app.use('/student', studentRoute);
       app.use('/post', postRoute);
-      app.use('/file/upload', fileRoute);
+      app.use('/file', fileRoute);
       resolve(app);
     });
   });

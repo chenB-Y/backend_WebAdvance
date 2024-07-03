@@ -2,6 +2,7 @@
 import express from 'express';
 const router = express.Router();
 import AuthController from '../controllers/auth_controller';
+import { authMiddleware } from '../controllers/auth_controller';
 
 /**
  * @swagger
@@ -125,5 +126,9 @@ router.get('/refresh', AuthController.refresh);
 router.post('/google', AuthController.googleSignin);
 
 router.get('/logout', AuthController.logout);
+
+router.get('/getUser/:id', authMiddleware, AuthController.getUserData);
+
+router.put('/update-username', authMiddleware, AuthController.updateProfile);
 
 export default router;
