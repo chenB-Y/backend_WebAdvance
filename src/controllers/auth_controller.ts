@@ -254,7 +254,7 @@ export const updateProfile = async (req: Request, res: Response) => {
     // If there's a current image URL, remove the old image file
     if (user.imgUrl) {
       const imagePath = path.join(
-        './public',
+        './public/users',
         user.imgUrl.split('localhost:3000/')[1]
       );
       fs.unlink(imagePath, (err) => {

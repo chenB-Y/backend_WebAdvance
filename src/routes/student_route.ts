@@ -17,7 +17,11 @@ router.post(
   StudentController.post.bind(StudentController)
 );
 
-router.put('/', authMiddleware, StudentController.put.bind(StudentController));
+router.put(
+  '/update-student/:id',
+  authMiddleware,
+  StudentController.put.bind(StudentController)
+);
 
 router.delete(
   '/',

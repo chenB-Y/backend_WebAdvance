@@ -19,7 +19,8 @@ const init = () => {
     mongoose.connect(process.env.DATABASE_URL).then(() => {
       app.use(bodyParser.urlencoded({ extended: true }));
       app.use(bodyParser.json());
-      app.use(express.static(path.join(__dirname, '../public')));
+      app.use(express.static(path.join(__dirname, '../public/users')));
+      app.use(express.static(path.join(__dirname, '../public/products')));
       app.use(cors());
       app.use((req, res, next) => {
         res.header('Access-Control-Allow-Origin', '*');
