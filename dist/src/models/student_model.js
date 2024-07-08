@@ -7,16 +7,20 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const StudentSchema = new mongoose_1.default.Schema({
     _id: {
         type: String,
-        required: true
+        required: true,
     },
     name: {
         type: String,
-        required: true
+        required: true,
     },
     age: {
         type: Number,
-        required: true
-    }
+        required: true,
+    },
+    url: {
+        type: String,
+        required: true,
+    },
 });
 exports.default = mongoose_1.default.model('Student', StudentSchema);
 //# sourceMappingURL=student_model.js.map

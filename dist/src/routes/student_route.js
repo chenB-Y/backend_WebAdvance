@@ -11,7 +11,7 @@ const auth_controller_1 = require("../controllers/auth_controller");
 router.get('/', auth_controller_1.authMiddleware, student_controller_1.default.get.bind(student_controller_1.default));
 router.get('/:id', auth_controller_1.authMiddleware, student_controller_1.default.get.bind(student_controller_1.default));
 router.post('/', auth_controller_1.authMiddleware, student_controller_1.default.post.bind(student_controller_1.default));
-router.put('/', auth_controller_1.authMiddleware, student_controller_1.default.put.bind(student_controller_1.default));
+router.put('/update-student/:id', auth_controller_1.authMiddleware, student_controller_1.default.put.bind(student_controller_1.default));
 router.delete('/', auth_controller_1.authMiddleware, student_controller_1.default.delete.bind(student_controller_1.default));
 exports.default = router;
 //# sourceMappingURL=student_route.js.map

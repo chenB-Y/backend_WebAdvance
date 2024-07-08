@@ -7,6 +7,7 @@ const express_1 = __importDefault(require("express"));
 const app = (0, express_1.default)();
 const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
+const path_1 = __importDefault(require("path"));
 dotenv_1.default.config();
 const body_parser_1 = __importDefault(require("body-parser"));
 const student_route_1 = __importDefault(require("./routes/student_route"));
@@ -22,6 +23,8 @@ const init = () => {
         mongoose_1.default.connect(process.env.DATABASE_URL).then(() => {
             app.use(body_parser_1.default.urlencoded({ extended: true }));
             app.use(body_parser_1.default.json());
+            app.use(express_1.default.static(path_1.default.join(__dirname, '../public/users')));
+            app.use(express_1.default.static(path_1.default.join(__dirname, '../public/products')));
             app.use((0, cors_1.default)());
             app.use((req, res, next) => {
                 res.header('Access-Control-Allow-Origin', '*');
@@ -32,7 +35,7 @@ const init = () => {
             app.use('/auth', auth_route_1.default);
             app.use('/student', student_route_1.default);
             app.use('/post', post_route_1.default);
-            app.use('/file/upload', file_route_1.default);
+            app.use('/file', file_route_1.default);
             resolve(app);
         });
     });

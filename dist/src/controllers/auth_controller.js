@@ -12,11 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateProfile = exports.authMiddleware = void 0;
+exports.updateProfile = exports.getUserData = exports.authMiddleware = void 0;
 const user_model_1 = __importDefault(require("../models/user_model"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const google_auth_library_1 = require("google-auth-library");
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
 const client = new google_auth_library_1.OAuth2Client();
 const googleSignin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(req.body);
@@ -91,6 +93,7 @@ const generateTokens = (user) => __awaiter(void 0, void 0, void 0, function* () 
         return {
             accessToken: accessToken,
             refreshToken: refreshToken,
+            userID: user._id,
         };
     }
     catch (err) {
@@ -204,15 +207,57 @@ const authMiddleware = (req, res, next) => {
     });
 };
 exports.authMiddleware = authMiddleware;
-const updateProfile = () => {
-    // update profile
-};
+const getUserData = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    if (req.params.id != null) {
+        const user = yield user_model_1.default.findById(req.params.id);
+        if (user == null) {
+            return res.status(404).send('User not found');
+        }
+        console.log('user:', user);
+        return res.status(200).send(user);
+    }
+});
+exports.getUserData = getUserData;
+const updateProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userID, newUsername, url } = req.body;
+    console.log('userID:', userID, 'newUsername:', newUsername, 'url:', url);
+    try {
+        const user = yield user_model_1.default.findById(userID);
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+        // If there's a current image URL, remove the old image file
+        if (user.imgUrl) {
+            const imagePath = path_1.default.join('./public/users', user.imgUrl.split('localhost:3000/')[1]);
+            fs_1.default.unlink(imagePath, (err) => {
+                if (err) {
+                    console.error('Error deleting old image:', err);
+                }
+                else {
+                    console.log('Old image deleted:', imagePath);
+                }
+            });
+        }
+        // Update the username and image URL fields
+        if (newUsername)
+            user.username = newUsername;
+        if (url)
+            user.imgUrl = url;
+        yield user.save(); // Save the updated user object
+        return res.status(200).send(user);
+    }
+    catch (err) {
+        console.error('Error updating profile:', err);
+        return res.status(500).send('Error updating profile');
+    }
+});
 exports.updateProfile = updateProfile;
 exports.default = {
     googleSignin,
     register,
     login,
     logout,
+    getUserData: exports.getUserData,
     updateProfile: exports.updateProfile,
     authMiddleware: exports.authMiddleware,
     refresh,
