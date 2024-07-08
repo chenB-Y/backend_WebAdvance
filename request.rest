@@ -79,15 +79,15 @@ Content-Type: application/json
     "products": ["product11", "product22"]
 }
 ###
-GET http://localhost:3000/group/getGroup/668b93b023bf5d752cd59fc9
+GET http://localhost:3000/group/getGroup/shahars%20group
 ###
-PUT http://localhost:3000/group/updateGroup/668b93b023bf5d752cd59fc9
+PUT http://localhost:3000/group/updateGroup/chen
 Content-Type: application/json
 
 {
-    "name": "shahar's group",
+    "name": "shahar",
     "participants": ["ss", "uu"],
-    "products": ["pppp", "rrrrr"]
+    "products": ["668bdb6f93a2fa15ae83bfa3","668be3f6db25ef1b79566eee"]
 }
 ###
 DELETE http://localhost:3000/group/deleteGroup/668b93b023bf5d752cd59fc9
