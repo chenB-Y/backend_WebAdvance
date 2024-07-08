@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import Mongoose from 'mongoose';
-import Student from '../models/student_model';
+import Product from '../models/Product_model';
 import fs from 'fs';
 import path from 'path';
 
@@ -29,37 +29,37 @@ class BaseController<ModelInterface> {
     }
   }
 
-  //post should be used to create a new student
+  //post should be used to create a new product
   async post(req: Request, res: Response) {
     console.log('**************************************req.body:', req.body);
     const mod = req.body;
     try {
-      const newStudent = await this.model.create(mod);
-      res.status(201).json(newStudent);
+      const newProduct = await this.model.create(mod);
+      res.status(201).json(newProduct);
     } catch (err) {
       res.status(500).send(err.message);
     }
   }
 
-  //put should be used to update a student
+  //put should be used to update a product
   async put(req: Request, res: Response) {
     if (req.params.id != null) {
-      const student = await Student.findById(req.params.id);
+      const product = await Product.findById(req.params.id);
       const mod = req.body;
       console.log(
         '**************************************req.body:',
-        req.body.url
+        req.body.imageUrl
       );
       console.log(
-        '**************************************student:',
-        student.url
+        '**************************************product:',
+        product.imageUrl
       );
       try {
         // If there's a current image URL, remove the old image file
-        if (student.url && mod.url) {
+        if (product.imageUrl && mod.imageUrl) {
           const imagePath = path.join(
             './public/products',
-            student.url.split('localhost:3000/')[1]
+            product.imageUrl.split('localhost:3000/')[1]
           );
           fs.unlink(imagePath, (err) => {
             if (err) {
@@ -69,16 +69,16 @@ class BaseController<ModelInterface> {
             }
           });
         }
-        if (student.name) student.name = mod.name;
-        if (student.age) student.age = mod.age;
-        if (student.url) student.url = mod.url;
-        const updatedModel = await student.save();
+        if (product.name) product.name = mod.name;
+        if (product.amount) product.amount = mod.amount;
+        if (product.imageUrl) product.imageUrl = mod.imageUrl;
+        const updatedModel = await product.save();
         res.status(200).json(updatedModel);
       } catch (err) {
         res.status(500).send(err.message);
       }
     } else {
-      res.status(400).send('There is no student with this ID');
+      res.status(400).send('There is no product with this ID');
     }
   }
 
@@ -86,7 +86,7 @@ class BaseController<ModelInterface> {
     try {
       const mod = req.body;
       await this.model.findByIdAndDelete(mod._id);
-      res.status(200).json(`Student with id: ${mod._id} deleted`);
+      res.status(200).json(`product with id: ${mod._id} deleted`);
     } catch (err) {
       res.status(500).send(err.message);
     }

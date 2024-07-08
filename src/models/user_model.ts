@@ -7,6 +7,7 @@ export interface IUser {
   password: string;
   imgUrl?: string;
   tokens: string[];
+  groupID?: string;
 }
 
 const UserSchema = new mongoose.Schema<IUser>({
@@ -27,6 +28,9 @@ const UserSchema = new mongoose.Schema<IUser>({
   },
   tokens: {
     type: [String],
+  },
+  groupID:{
+    type: String,
   },
 });
 

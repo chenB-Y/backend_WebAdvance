@@ -1,15 +1,15 @@
 ###
 
-GET http://localhost:3000/student
+GET http://localhost:3000/product
 
 ###
-GET http://localhost:3000/student/12345
+GET http://localhost:3000/product/12345
 
 ###
-GET http://localhost:3000/student?name=John
+GET http://localhost:3000/product?name=John
 
 ###
-POST http://localhost:3000/student
+POST http://localhost:3000/product
 Content-Type: application/json
 
 {
@@ -19,7 +19,7 @@ Content-Type: application/json
 }
 
 ###
-PUT http://localhost:3000/student/
+PUT http://localhost:3000/product/
 Content-Type: application/json
 
 {
@@ -29,7 +29,7 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:3000/student/
+DELETE http://localhost:3000/product/
 Content-Type: application/json
 
 {
@@ -68,3 +68,26 @@ Content-Type: application/json
     "email": "test2@test.com",
     "password": "1234"
 }
+###
+
+POST http://localhost:3000/group/createGroup
+Content-Type: application/json
+
+{
+    "name": "yaakov's group",
+    "participants": ["chen1", "moshe1"],
+    "products": ["product11", "product22"]
+}
+###
+GET http://localhost:3000/group/getGroup/668b93b023bf5d752cd59fc9
+###
+PUT http://localhost:3000/group/updateGroup/668b93b023bf5d752cd59fc9
+Content-Type: application/json
+
+{
+    "name": "shahar's group",
+    "participants": ["ss", "uu"],
+    "products": ["pppp", "rrrrr"]
+}
+###
+DELETE http://localhost:3000/group/deleteGroup/668b93b023bf5d752cd59fc9

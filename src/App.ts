@@ -5,11 +5,12 @@ import cors from 'cors';
 import path from 'path';
 env.config();
 import bodyParser from 'body-parser';
-import studentRoute from './routes/student_route';
+import productRoute from './routes/product_route';
 import postRoute from './routes/post_route';
 import authRoute from './routes/auth_route';
 import fileRoute from './routes/file_route';
 import mongoose from 'mongoose';
+import groupRoute from './routes/group_route'
 
 const init = () => {
   const promise = new Promise<Express>((resolve) => {
@@ -29,9 +30,10 @@ const init = () => {
         next();
       });
       app.use('/auth', authRoute);
-      app.use('/student', studentRoute);
+      app.use('/product', productRoute);
       app.use('/post', postRoute);
       app.use('/file', fileRoute);
+      app.use('/group' ,groupRoute)
       resolve(app);
     });
   });
