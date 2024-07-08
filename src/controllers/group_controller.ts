@@ -12,9 +12,9 @@ export const createGroup = async (req: Request, res: Response) => {
 };
 
 // Get a single group by ID
-export const getGroupById = async (req: Request, res: Response) => {
+export const getGroupByName = async (req: Request, res: Response) => {
   try {
-    const group = await Group.findById(req.params.id);
+    const group = await Group.findOne({name:req.params.name}).populate('products');
     if (!group) {
       return res.status(404).json({ message: 'Group not found' });
     }
@@ -27,16 +27,25 @@ export const getGroupById = async (req: Request, res: Response) => {
 // Update a group by ID
 export const updateGroup = async (req: Request, res: Response) => {
   try {
-    const group = await Group.findById(req.params.id);
+    console.log("1111111111111111");
+    const group = await Group.findOne({name:req.params.name}).populate('products');
+    console.log("222222222222222");
     if (!group) {
+      console.log("3333333333333333333");
       return res.status(404).json({ message: 'Group not found' });
     }
+    console.log("444444444444444444");
     if (req.body.name) group.name = req.body.name;
     if (req.body.participants) {
       //add participant to the array of participant that already exist
-      group.participants.push(req.body.participants);
+      console.log("5555555555555555555555555");
+      const newParticipants = Array.isArray(req.body.participants) ? req.body.participants : [req.body.participants];
+      group.participants = [...group.participants, ...newParticipants];
     }
-    if (req.body.products) group.products = req.body.products;
+    if(req.body.products){
+      const newProducts = Array.isArray(req.body.products) ? req.body.products : [req.body.products];
+      group.products = [...group.products, ...newProducts];
+    }
     const updatedGroup = await group.save();
     res.status(200).json(updatedGroup);
   } catch (error) {
@@ -59,7 +68,7 @@ export const deleteGroup = async (req: Request, res: Response) => {
 
 export default {
   createGroup,
-  getGroupById,
+  getGroupByName,
   updateGroup,
   deleteGroup,
 };
