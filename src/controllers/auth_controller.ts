@@ -76,7 +76,13 @@ const register = async (req: AuthRequest, res: Response) => {
 
 const generateTokens = async (
   user: Document<unknown, object, IUser> & IUser & Required<{ _id: string }>
-): Promise<{ accessToken: string; refreshToken: string; userID: string }> => {
+): Promise<{
+  accessToken: string;
+  refreshToken: string;
+  userID: string;
+  groupID: string;
+  username: string;
+}> => {
   user.tokens = [];
   const accessToken = jwt.sign(
     { id_: user._id },
@@ -92,6 +98,7 @@ const generateTokens = async (
   if (user.tokens == null) {
     user.tokens = [];
   }
+  user.tokens.push(accessToken);
   user.tokens.push(refreshToken);
   try {
     await user.save();
@@ -99,6 +106,8 @@ const generateTokens = async (
       accessToken: accessToken,
       refreshToken: refreshToken,
       userID: user._id,
+      groupID: user.groupID,
+      username: user.username,
     };
   } catch (err) {
     return null;

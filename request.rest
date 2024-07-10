@@ -81,13 +81,13 @@ Content-Type: application/json
 ###
 GET http://localhost:3000/group/getGroup/shahars%20group
 ###
-PUT http://localhost:3000/group/updateGroup/chen
+PUT http://localhost:3000/group/updateGroup/rtrrr
 Content-Type: application/json
 
 {
     "name": "shahar",
     "participants": ["ss", "uu"],
-    "products": ["668bdb6f93a2fa15ae83bfa3","668be3f6db25ef1b79566eee"]
+    "products": ["668bf109745a4c9d8ffaeccf","668bf114745a4c9d8ffaecd1"]
 }
 ###
 DELETE http://localhost:3000/group/deleteGroup/668b93b023bf5d752cd59fc9

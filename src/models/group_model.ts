@@ -1,18 +1,17 @@
 // Group.ts
 import mongoose, { Schema, Document, Model } from 'mongoose';
-import  { IProduct } from './Product_model'; // Import IProduct interface from Product_model
 
 export interface IGroup extends Document {
   name: string;
   participants: string[];
-  products: IProduct[];
+  products: Schema.Types.ObjectId[];
 }
 
 const GroupSchema: Schema<IGroup> = new Schema({
   name: {
     type: String,
     required: true,
-    unique:true,
+    unique: true,
   },
   participants: {
     type: [String],

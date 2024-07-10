@@ -3,6 +3,7 @@ import Mongoose from 'mongoose';
 import Product from '../models/Product_model';
 import fs from 'fs';
 import path from 'path';
+import Comment from '../models/comment_model';
 
 class BaseController<ModelInterface> {
   model: Mongoose.Model<ModelInterface>;
@@ -38,6 +39,47 @@ class BaseController<ModelInterface> {
       res.status(201).json(newProduct);
     } catch (err) {
       res.status(500).send(err.message);
+    }
+  }
+
+  async getComments(req: Request, res: Response) {
+    try {
+      const product = await Product.findById(req.params.id).populate(
+        'comments'
+      );
+      console.log('**************************************product:', product);
+      if (!product) {
+        return res.status(404).json({ message: 'Product not found' });
+      }
+      res.status(200).json(product);
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching comments', error });
+    }
+  }
+
+  async postComment(req: Request, res: Response) {
+    try {
+      console.log('**************************************req.body:', req.body);
+      const product = await Product.findById(req.params.id);
+      console.log('22222222222222222222222');
+      if (!product) {
+        console.log('3333333333333333333');
+        return res.status(404).json({ message: 'Product not found' });
+      }
+      try {
+        console.log('4444444444444444444444');
+        const newComment = await Comment.create(req.body);
+        console.log('5555555555555555555555');
+        product.comments.push(newComment.id);
+        console.log('6666666666666666666666');
+        const updatedProduct = await product.save();
+        console.log('7777777777777777777777');
+        res.status(200).json(updatedProduct);
+      } catch (err) {
+        res.status(500).send(err.message);
+      }
+    } catch (error) {
+      res.status(500).json({ message: 'Error updating group', error });
     }
   }
 
@@ -84,9 +126,9 @@ class BaseController<ModelInterface> {
 
   async delete(req: Request, res: Response) {
     try {
-      const mod = req.body;
-      await this.model.findByIdAndDelete(mod._id);
-      res.status(200).json(`product with id: ${mod._id} deleted`);
+      const productID = req.params.id;
+      await Product.findByIdAndDelete(productID);
+      res.status(200).json(`product with id: ${productID} deleted`);
     } catch (err) {
       res.status(500).send(err.message);
     }

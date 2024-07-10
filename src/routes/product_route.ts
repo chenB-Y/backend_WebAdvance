@@ -11,6 +11,12 @@ router.get(
   ProductController.get.bind(ProductController)
 );
 
+router.get(
+  '/comments/:id',
+  authMiddleware,
+  ProductController.getComments.bind(ProductController)
+);
+
 router.post(
   '/',
   authMiddleware,
@@ -23,8 +29,14 @@ router.put(
   ProductController.put.bind(ProductController)
 );
 
+router.post(
+  '/addComment/:id',
+  authMiddleware,
+  ProductController.postComment.bind(ProductController)
+);
+
 router.delete(
-  '/',
+  '/:id',
   authMiddleware,
   ProductController.delete.bind(ProductController)
 );

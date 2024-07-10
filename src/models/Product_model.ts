@@ -1,12 +1,11 @@
 import { Document, Schema, Model, model } from 'mongoose';
-
-export interface IProduct extends Document{
+export interface IProduct extends Document {
   _id: string;
   name: string;
   amount: number;
   imageUrl: string;
   ownerId: string;
-  comments: [string];
+  comments: Schema.Types.ObjectId[];
 }
 
 const ProductSchema = new Schema<IProduct>({
@@ -22,12 +21,12 @@ const ProductSchema = new Schema<IProduct>({
     type: String,
     required: true,
   },
-  ownerId:{
+  ownerId: {
     type: String,
-    required:true,
+    required: true,
   },
-  comments:{
-    type: [String],
+  comments: {
+    type: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
   },
 });
 
