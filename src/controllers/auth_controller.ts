@@ -18,21 +18,23 @@ const googleSignin = async (req: Request, res: Response) => {
       audience: process.env.GOOGLE_CLIENT_ID,
     });
     const payload = ticket.getPayload();
+    console.log('payload:', payload);
     const email = payload?.email;
     if (email != null) {
       let user = await User.findOne({ email: email });
       if (user == null) {
         user = await User.create({
           email: email,
+          username: payload?.name,
           password: '0',
           imgUrl: payload?.picture,
         });
       }
-      const tokens = await generateTokens(user);
+      console.log('user:', user);
+      const tokens = await generateTokens(user); //******************************/
       res.status(200).send({
-        email: user.email,
-        _id: user._id,
-        imgUrl: user.imgUrl,
+        username: user.username,
+        userID: user._id,
         ...tokens,
       });
     }
@@ -64,11 +66,17 @@ const register = async (req: AuthRequest, res: Response) => {
     });
     //res.send(newUser);
     // add login logic here
-    const tokens = await generateTokens(newUser);
+    const tokens = await generateTokens(newUser); //******************************/
     if (tokens == null) {
       return res.status(400).send('Error generating tokens');
     }
-    return res.status(200).send(tokens);
+    const response = {
+      groupID: newUser.groupID,
+      username: newUser.username,
+      userID: newUser._id,
+      ...tokens,
+    };
+    return res.status(200).send(response);
   } catch (err) {
     return res.status(500);
   }
@@ -79,9 +87,9 @@ const generateTokens = async (
 ): Promise<{
   accessToken: string;
   refreshToken: string;
-  userID: string;
-  groupID: string;
-  username: string;
+  // userID: string;
+  // groupID: string;
+  // username: string;
 }> => {
   user.tokens = [];
   const accessToken = jwt.sign(
@@ -105,9 +113,9 @@ const generateTokens = async (
     return {
       accessToken: accessToken,
       refreshToken: refreshToken,
-      userID: user._id,
-      groupID: user.groupID,
-      username: user.username,
+      // userID: user._id,
+      // groupID: user.groupID,
+      // username: user.username,
     };
   } catch (err) {
     return null;
@@ -130,12 +138,18 @@ const login = async (req: Request, res: Response) => {
       return res.status(400).send('Invalid Credentials');
     }
 
-    const tokens = await generateTokens(user);
+    const tokens = await generateTokens(user); //******************************/
     console.log('user:', user);
     if (tokens == null) {
       return res.status(400).send('Error generating tokens');
     }
-    return res.status(200).send(tokens);
+    const response = {
+      groupID: user.groupID,
+      username: user.username,
+      userID: user._id,
+      ...tokens,
+    };
+    return res.status(200).send(response);
   } catch (err) {
     return res.status(500).send(err.message);
   }
@@ -171,7 +185,7 @@ const refresh = async (req: Request, res: Response) => {
           return res.status(401).send('Invalid token');
         }
         user.tokens = user.tokens.filter((token) => token !== refreshToken);
-        const tokens = await generateTokens(user);
+        const tokens = await generateTokens(user); //***********NOOOOO Updated!*************/
         if (tokens == null) {
           return res.status(400).send('Error generating tokens');
         }

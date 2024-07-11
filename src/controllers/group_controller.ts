@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Group from '../models/group_model';
 import Product from '../models/Product_model';
 import User from '../models/user_model';
+import { broadcast } from '../websocketServer';
 
 // Create a new group
 export const createGroup = async (req: Request, res: Response) => {
@@ -59,6 +60,7 @@ export const addProduct = async (req: Request, res: Response) => {
       const newProduct = await Product.create(mod);
       group.products.push(newProduct.id);
       const updatedGroup = await group.save();
+      broadcast({ type: 'PRODUCT_ADDED', newProduct });
       res.status(200).json(updatedGroup);
     } catch (err) {
       res.status(500).send(err.message);
