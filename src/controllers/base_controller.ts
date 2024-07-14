@@ -5,6 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import Comment from '../models/comment_model';
 import { broadcast } from '../websocketServer';
+import Group from '../models/group_model';
 
 class BaseController<ModelInterface> {
   model: Mongoose.Model<ModelInterface>;
@@ -144,11 +145,58 @@ class BaseController<ModelInterface> {
 
   async delete(req: Request, res: Response) {
     try {
-      const productID = req.params.id;
+      const productID = new Mongoose.Types.ObjectId(req.params.id);
+      
+      // Find the product by ID
+      const product = await Product.findById(productID);
+  
+      // If the product is not found, return an error
+      if (!product) {
+        return res.status(404).json({ message: `Product with id: ${productID} not found` });
+      }
+
+      const ownerId = product.ownerId;
+  
+      // Loop through the comments array in the product
+      for (const commentID of product.comments) {
+        // Delete each comment from the Comments collection
+        await Comment.findByIdAndDelete(commentID);
+      }
+
+      const imageUrl = product.imageUrl;
+      if (imageUrl) {
+        const filename = path.basename(imageUrl);
+        const imagePath = path.join(__dirname,'..', '../public/products', filename);
+        console.log("path: "+ imagePath);
+        // Delete the image file
+        fs.unlink(imagePath, (err) => {
+          if (err) {
+            console.error(`Error deleting image file ${imageUrl}: ${err}`);
+          } else {
+            console.log(`Deleted image file ${imageUrl}`);
+          }
+        });
+      }
+  
+      // Delete the product
       await Product.findByIdAndDelete(productID);
-      broadcast({ type: 'PRODUCT_DELETED', productId: req.params.id });
-      res.status(200).json(`product with id: ${productID} deleted`);
+
+      const group = await Group.findOne({ participants: ownerId });
+
+      if (group) {
+        // Filter out the product from the group's products array
+        group.products = group.products.filter(productId => productId.toString() !== productID.toString());
+        await group.save();
+      }
+
+  
+      // Broadcast the deletion event
+      broadcast({ type: 'PRODUCT_DELETED', productId: productID });
+  
+      // Return a success message
+      res.status(200).json(`Product with id: ${productID} deleted along with its comments`);
     } catch (err) {
+      // Handle any errors
       res.status(500).send(err.message);
     }
   }
