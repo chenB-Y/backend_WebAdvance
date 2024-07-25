@@ -97,12 +97,13 @@ const generateTokens = async (
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: process.env.ACCESS_TOKEN_EXPIRATION }
   );
-  const random = Math.floor(Math.random() * 1000000).toString();
+  console.log('accessToken:', accessToken);
+  //const random = Math.floor(Math.random() * 1000000).toString();
   const refreshToken = jwt.sign(
-    { id_: user._id, random: random },
-    process.env.ACCESS_TOKEN_SECRET,
-    {}
+    { id_: user._id },
+    process.env.REFRESH_TOKEN_SECRET
   );
+  console.log('refreshToken:', refreshToken);
   if (user.tokens == null) {
     user.tokens = [];
   }
@@ -149,6 +150,7 @@ const login = async (req: Request, res: Response) => {
       userID: user._id,
       ...tokens,
     };
+    console.log('*********************************:', tokens);
     return res.status(200).send(response);
   } catch (err) {
     return res.status(500).send(err.message);
@@ -162,33 +164,51 @@ const extractToken = (req: Request): string => {
 };
 
 const refresh = async (req: Request, res: Response) => {
-  const refreshToken = extractToken(req);
+  console.log('hellooooooooo refreshhhhhhhhhhhhhhhhh');
+  console.log('req:', req.headers);
+  console.log(
+    '***************************************************************************'
+  );
+  const refreshToken = req.headers['refreshtoken'];
+
+  console.log('refreshTokenHeader:', refreshToken);
   if (refreshToken == null) {
     return res.status(401).send('No token provided1');
   }
+  console.log('111111111111111111111111111111111111111');
+  console.log('refreshToken:', refreshToken);
   try {
+    console.log('3333333333333333333333333333333333');
     jwt.verify(
       refreshToken,
-      process.env.ACCESS_TOKEN_SECRET,
+      process.env.REFRESH_TOKEN_SECRET,
       async (err, data: jwt.JwtPayload) => {
         if (err) {
+          console.log('err:', err);
+          console.log('4444444444444444444444444444444444444444');
           return res.status(401).send('Token is not valid');
         }
+        console.log('55555555555555555555555555555555555555555555');
         const id = data.id_;
         const user = await User.findOne({ _id: id });
         if (user == null) {
           return res.status(401).send('User not found');
         }
-        if (!user.tokens.includes(refreshToken)) {
+        console.log('666666666666666666666666666666666666666666');
+        console.log('user:', user.tokens);
+        if (!user.tokens.includes(refreshToken.toString())) {
+          console.log('77777777777777777777777777777777777777');
           user.tokens = [];
           await user.save();
           return res.status(401).send('Invalid token');
         }
+        console.log('888888888888888888888888888888888888888888888888');
         user.tokens = user.tokens.filter((token) => token !== refreshToken);
         const tokens = await generateTokens(user); //***********NOOOOO Updated!*************/
         if (tokens == null) {
           return res.status(400).send('Error generating tokens');
         }
+        console.log('99999999999999999999999999999999999999999');
         return res.status(200).send(tokens);
       }
     );

@@ -10,11 +10,12 @@ const cors_1 = __importDefault(require("cors"));
 const path_1 = __importDefault(require("path"));
 dotenv_1.default.config();
 const body_parser_1 = __importDefault(require("body-parser"));
-const student_route_1 = __importDefault(require("./routes/student_route"));
+const product_route_1 = __importDefault(require("./routes/product_route"));
 const post_route_1 = __importDefault(require("./routes/post_route"));
 const auth_route_1 = __importDefault(require("./routes/auth_route"));
 const file_route_1 = __importDefault(require("./routes/file_route"));
 const mongoose_1 = __importDefault(require("mongoose"));
+const group_route_1 = __importDefault(require("./routes/group_route"));
 const init = () => {
     const promise = new Promise((resolve) => {
         const db = mongoose_1.default.connection;
@@ -33,9 +34,10 @@ const init = () => {
                 next();
             });
             app.use('/auth', auth_route_1.default);
-            app.use('/student', student_route_1.default);
+            app.use('/product', product_route_1.default);
             app.use('/post', post_route_1.default);
             app.use('/file', file_route_1.default);
+            app.use('/group', group_route_1.default);
             resolve(app);
         });
     });

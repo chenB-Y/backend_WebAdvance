@@ -28,18 +28,21 @@ const googleSignin = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             audience: process.env.GOOGLE_CLIENT_ID,
         });
         const payload = ticket.getPayload();
+        console.log('payload:', payload);
         const email = payload === null || payload === void 0 ? void 0 : payload.email;
         if (email != null) {
             let user = yield user_model_1.default.findOne({ email: email });
             if (user == null) {
                 user = yield user_model_1.default.create({
                     email: email,
+                    username: payload === null || payload === void 0 ? void 0 : payload.name,
                     password: '0',
                     imgUrl: payload === null || payload === void 0 ? void 0 : payload.picture,
                 });
             }
-            const tokens = yield generateTokens(user);
-            res.status(200).send(Object.assign({ email: user.email, _id: user._id, imgUrl: user.imgUrl }, tokens));
+            console.log('user:', user);
+            const tokens = yield generateTokens(user); //******************************/
+            res.status(200).send(Object.assign({ username: user.username, userID: user._id }, tokens));
         }
     }
     catch (err) {
@@ -69,11 +72,12 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         });
         //res.send(newUser);
         // add login logic here
-        const tokens = yield generateTokens(newUser);
+        const tokens = yield generateTokens(newUser); //******************************/
         if (tokens == null) {
             return res.status(400).send('Error generating tokens');
         }
-        return res.status(200).send(tokens);
+        const response = Object.assign({ groupID: newUser.groupID, username: newUser.username, userID: newUser._id }, tokens);
+        return res.status(200).send(response);
     }
     catch (err) {
         return res.status(500);
@@ -82,18 +86,23 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 const generateTokens = (user) => __awaiter(void 0, void 0, void 0, function* () {
     user.tokens = [];
     const accessToken = jsonwebtoken_1.default.sign({ id_: user._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.ACCESS_TOKEN_EXPIRATION });
-    const random = Math.floor(Math.random() * 1000000).toString();
-    const refreshToken = jsonwebtoken_1.default.sign({ id_: user._id, random: random }, process.env.ACCESS_TOKEN_SECRET, {});
+    console.log('accessToken:', accessToken);
+    //const random = Math.floor(Math.random() * 1000000).toString();
+    const refreshToken = jsonwebtoken_1.default.sign({ id_: user._id }, process.env.REFRESH_TOKEN_SECRET);
+    console.log('refreshToken:', refreshToken);
     if (user.tokens == null) {
         user.tokens = [];
     }
+    user.tokens.push(accessToken);
     user.tokens.push(refreshToken);
     try {
         yield user.save();
         return {
             accessToken: accessToken,
             refreshToken: refreshToken,
-            userID: user._id,
+            // userID: user._id,
+            // groupID: user.groupID,
+            // username: user.username,
         };
     }
     catch (err) {
@@ -115,12 +124,14 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (!isMatch) {
             return res.status(400).send('Invalid Credentials');
         }
-        const tokens = yield generateTokens(user);
+        const tokens = yield generateTokens(user); //******************************/
         console.log('user:', user);
         if (tokens == null) {
             return res.status(400).send('Error generating tokens');
         }
-        return res.status(200).send(tokens);
+        const response = Object.assign({ groupID: user.groupID, username: user.username, userID: user._id }, tokens);
+        console.log('*********************************:', tokens);
+        return res.status(200).send(response);
     }
     catch (err) {
         return res.status(500).send(err.message);
@@ -132,30 +143,45 @@ const extractToken = (req) => {
     return token;
 };
 const refresh = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const refreshToken = extractToken(req);
+    console.log('hellooooooooo refreshhhhhhhhhhhhhhhhh');
+    console.log('req:', req.headers);
+    console.log('***************************************************************************');
+    const refreshToken = req.headers['refreshtoken'];
+    console.log('refreshTokenHeader:', refreshToken);
     if (refreshToken == null) {
         return res.status(401).send('No token provided1');
     }
+    console.log('111111111111111111111111111111111111111');
+    console.log('refreshToken:', refreshToken);
     try {
-        jsonwebtoken_1.default.verify(refreshToken, process.env.ACCESS_TOKEN_SECRET, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
+        console.log('3333333333333333333333333333333333');
+        jsonwebtoken_1.default.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, data) => __awaiter(void 0, void 0, void 0, function* () {
             if (err) {
+                console.log('err:', err);
+                console.log('4444444444444444444444444444444444444444');
                 return res.status(401).send('Token is not valid');
             }
+            console.log('55555555555555555555555555555555555555555555');
             const id = data.id_;
             const user = yield user_model_1.default.findOne({ _id: id });
             if (user == null) {
                 return res.status(401).send('User not found');
             }
-            if (!user.tokens.includes(refreshToken)) {
+            console.log('666666666666666666666666666666666666666666');
+            console.log('user:', user.tokens);
+            if (!user.tokens.includes(refreshToken.toString())) {
+                console.log('77777777777777777777777777777777777777');
                 user.tokens = [];
                 yield user.save();
                 return res.status(401).send('Invalid token');
             }
+            console.log('888888888888888888888888888888888888888888888888');
             user.tokens = user.tokens.filter((token) => token !== refreshToken);
-            const tokens = yield generateTokens(user);
+            const tokens = yield generateTokens(user); //***********NOOOOO Updated!*************/
             if (tokens == null) {
                 return res.status(400).send('Error generating tokens');
             }
+            console.log('99999999999999999999999999999999999999999');
             return res.status(200).send(tokens);
         }));
     }

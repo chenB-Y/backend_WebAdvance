@@ -20,6 +20,9 @@ const UserSchema = new mongoose_1.default.Schema({
     imgUrl: {
         type: String,
     },
+    groupID: {
+        type: String,
+    },
     tokens: {
         type: [String],
     },
