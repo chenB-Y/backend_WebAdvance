@@ -3,26 +3,64 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const App_1 = __importDefault(require("./App"));
-const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
-const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
-(0, App_1.default)().then((app) => {
-    const options = {
-        definition: {
-            openapi: '3.0.0',
-            info: {
-                title: 'Web Dev 2024 REST API',
-                version: '1.0.0',
-                description: 'REST server including authentication using JWT',
-            },
-            servers: [{ url: 'http://localhost:3000' }],
-        },
-        apis: ['./src/routes/*.ts'],
-    };
-    const specs = (0, swagger_jsdoc_1.default)(options);
-    app.use('/api-docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(specs));
-    app.listen(process.env.PORT, () => {
-        console.log(`Example app listening at http://localhost:${process.env.PORT}`);
-    });
+const express_1 = __importDefault(require("express"));
+const fs_1 = __importDefault(require("fs"));
+const https_1 = __importDefault(require("https"));
+const path_1 = __importDefault(require("path"));
+const dotenv_1 = __importDefault(require("dotenv"));
+const cors_1 = __importDefault(require("cors"));
+const body_parser_1 = __importDefault(require("body-parser"));
+const product_route_1 = __importDefault(require("./routes/product_route"));
+const post_route_1 = __importDefault(require("./routes/post_route"));
+const auth_route_1 = __importDefault(require("./routes/auth_route"));
+const file_route_1 = __importDefault(require("./routes/file_route"));
+const mongoose_1 = __importDefault(require("mongoose"));
+const group_route_1 = __importDefault(require("./routes/group_route"));
+const http_1 = __importDefault(require("http"));
+dotenv_1.default.config();
+const app = (0, express_1.default)();
+const PORT = 4000;
+mongoose_1.default.connect(process.env.PROD_ENV = "production" ? process.env.DATABASE_URL_PROD : process.env.DATABASE_URL)
+    .then(() => {
+    console.log('Connected to DB');
+})
+    .catch((err) => {
+    console.error('Connection error to DB:', err);
 });
+// CORS Configuration
+app.use((0, cors_1.default)({
+    origin: 'https://10.10.248.174', // Allow requests from your frontend domain
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+}));
+// Body parser middleware
+app.use(body_parser_1.default.urlencoded({ extended: true }));
+app.use(body_parser_1.default.json());
+// Routes
+app.use('/auth', auth_route_1.default);
+app.use('/product', product_route_1.default);
+app.use('/post', post_route_1.default);
+app.use('/file', file_route_1.default);
+app.use('/group', group_route_1.default);
+app.use(express_1.default.static('/home/st111/projectCode/backend_WebAdvance/public/products'));
+app.use(express_1.default.static('/home/st111/projectCode/backend_WebAdvance/public/users'));
+if (process.env.NODE_ENV !== 'production') {
+    console.log('development');
+    http_1.default.createServer(app).listen(process.env.PORT);
+    console.log(`Server is running on PORT:${process.env.PORT}`);
+}
+else {
+    console.log('production!');
+    // Load SSL certificates
+    const keyPath = path_1.default.resolve(__dirname, '../../../../client-key.pem');
+    const certPath = path_1.default.resolve(__dirname, '../../../../client-cert.pem');
+    const options = {
+        key: fs_1.default.readFileSync(keyPath),
+        cert: fs_1.default.readFileSync(certPath),
+    };
+    var server = https_1.default.createServer(options, app);
+    server.listen(process.env.PORT, () => {
+        console.log(`Server is running on PORT:${process.env.PORT}`);
+    });
+}
 //# sourceMappingURL=Server.js.map

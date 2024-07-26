@@ -6,8 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const file_controller_1 = require("../controllers/file_controller");
 const router = express_1.default.Router();
-// const base = "http://" + process.env.DOMAIN_BASE + ":" + process.env.PORT + "/";
-const base = 'http://localhost:3000/';
+const base = "https://10.10.248.174:4000/";
+//const base = 'http://localhost:3000/';
 router.post('/uploadUser', file_controller_1.upload.single('file'), (req, res) => {
     try {
         const filePath = req.file.filename;
@@ -20,6 +20,7 @@ router.post('/uploadUser', file_controller_1.upload.single('file'), (req, res) =
 router.post('/uploadProduct', file_controller_1.productUpload.single('file'), (req, res) => {
     try {
         const filePath = req.file.filename;
+        console.log('77777777777777777777777777777777777777777777777777777777777' + filePath);
         res.status(200).send({ url: base + filePath });
     }
     catch (err) {

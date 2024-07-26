@@ -9,7 +9,7 @@ export const createGroup = async (req: Request, res: Response) => {
   try {
     const newGroup = await Group.create(req.body);
     const response = await User.findById(req.body.participants);
-    response.groupID = newGroup._id;
+    response.groupID = newGroup._id.toString();
     response.save();
     res.status(201).json(newGroup);
   } catch (error) {
@@ -18,7 +18,9 @@ export const createGroup = async (req: Request, res: Response) => {
 };
 
 export const getGroupByName = async (req: Request, res: Response) => {
+  console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
   try {
+    console.log('ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss')
     const group = await Group.findById(req.params.id).populate('products');
     if (!group) {
       return res.status(404).json({ message: 'Group not found' });
@@ -39,7 +41,7 @@ export const updateGroup = async (req: Request, res: Response) => {
     group.participants.push(req.body.userID);
     console.log(req.body.userID);
     const response = await User.findById(req.body.userID);
-    response.groupID = group._id;
+    response.groupID = group._id.toString();
     response.save();
     const updatedGroup = await group.save();
     res.status(200).json(updatedGroup);

@@ -22,7 +22,7 @@ const createGroup = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const newGroup = yield group_model_1.default.create(req.body);
         const response = yield user_model_1.default.findById(req.body.participants);
-        response.groupID = newGroup._id;
+        response.groupID = newGroup._id.toString();
         response.save();
         res.status(201).json(newGroup);
     }
@@ -32,7 +32,9 @@ const createGroup = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.createGroup = createGroup;
 const getGroupByName = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
     try {
+        console.log('ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss');
         const group = yield group_model_1.default.findById(req.params.id).populate('products');
         if (!group) {
             return res.status(404).json({ message: 'Group not found' });
@@ -54,7 +56,7 @@ const updateGroup = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         group.participants.push(req.body.userID);
         console.log(req.body.userID);
         const response = yield user_model_1.default.findById(req.body.userID);
-        response.groupID = group._id;
+        response.groupID = group._id.toString();
         response.save();
         const updatedGroup = yield group.save();
         res.status(200).json(updatedGroup);

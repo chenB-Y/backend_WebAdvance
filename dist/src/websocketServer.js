@@ -3,9 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.broadcast = void 0;
+exports.broadcast = broadcast;
 const ws_1 = __importDefault(require("ws"));
-const wss = new ws_1.default.Server({ port: 8080 });
+const wss = new ws_1.default.Server({ port: 4001 });
 wss.on('connection', (ws) => {
     console.log('New client connected');
     ws.on('message', (message) => {
@@ -22,6 +22,5 @@ function broadcast(data) {
         }
     });
 }
-exports.broadcast = broadcast;
 exports.default = wss;
 //# sourceMappingURL=websocketServer.js.map

@@ -10,7 +10,7 @@ import postRoute from './routes/post_route';
 import authRoute from './routes/auth_route';
 import fileRoute from './routes/file_route';
 import mongoose from 'mongoose';
-import groupRoute from './routes/group_route'
+import groupRoute from './routes/group_route';
 
 const init = () => {
   const promise = new Promise<Express>((resolve) => {
@@ -20,8 +20,11 @@ const init = () => {
     mongoose.connect(process.env.DATABASE_URL).then(() => {
       app.use(bodyParser.urlencoded({ extended: true }));
       app.use(bodyParser.json());
-      app.use(express.static(path.join(__dirname, '../public/users')));
-      app.use(express.static(path.join(__dirname, '../public/products')));
+
+      // Serve static files
+      const frontendPath = path.join(__dirname, '../../../frontend_WebAdvance/build');
+      app.use(express.static(frontendPath));
+
       app.use(cors());
       app.use((req, res, next) => {
         res.header('Access-Control-Allow-Origin', '*');
@@ -33,7 +36,13 @@ const init = () => {
       app.use('/product', productRoute);
       app.use('/post', postRoute);
       app.use('/file', fileRoute);
-      app.use('/group' ,groupRoute)
+      app.use('/group', groupRoute);
+      
+      // Serve the frontend for any other route
+      app.get('*', (req, res) => {
+        res.sendFile(path.join(frontendPath, 'index.html'));
+      });
+
       resolve(app);
     });
   });

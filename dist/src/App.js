@@ -24,8 +24,9 @@ const init = () => {
         mongoose_1.default.connect(process.env.DATABASE_URL).then(() => {
             app.use(body_parser_1.default.urlencoded({ extended: true }));
             app.use(body_parser_1.default.json());
-            app.use(express_1.default.static(path_1.default.join(__dirname, '../public/users')));
-            app.use(express_1.default.static(path_1.default.join(__dirname, '../public/products')));
+            // Serve static files
+            const frontendPath = path_1.default.join(__dirname, '../../../frontend_WebAdvance/build');
+            app.use(express_1.default.static(frontendPath));
             app.use((0, cors_1.default)());
             app.use((req, res, next) => {
                 res.header('Access-Control-Allow-Origin', '*');
@@ -38,6 +39,10 @@ const init = () => {
             app.use('/post', post_route_1.default);
             app.use('/file', file_route_1.default);
             app.use('/group', group_route_1.default);
+            // Serve the frontend for any other route
+            app.get('*', (req, res) => {
+                res.sendFile(path_1.default.join(frontendPath, 'index.html'));
+            });
             resolve(app);
         });
     });

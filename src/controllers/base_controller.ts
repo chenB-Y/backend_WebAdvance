@@ -119,7 +119,7 @@ class BaseController<ModelInterface> {
         if (product.imageUrl !== mod.imageUrl) {
           const imagePath = path.join(
             './public/products',
-            product.imageUrl.split('localhost:3000/')[1]
+            product.imageUrl.split('10.10.248.174:4000/')[1]
           );
           fs.unlink(imagePath, (err) => {
             if (err) {
@@ -166,7 +166,7 @@ class BaseController<ModelInterface> {
       const imageUrl = product.imageUrl;
       if (imageUrl) {
         const filename = path.basename(imageUrl);
-        const imagePath = path.join(__dirname,'..', '../public/products', filename);
+        const imagePath = path.join(__dirname, '..', '..', 'public', 'products', filename);
         console.log("path: "+ imagePath);
         // Delete the image file
         fs.unlink(imagePath, (err) => {
