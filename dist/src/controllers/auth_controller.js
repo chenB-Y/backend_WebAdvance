@@ -248,13 +248,17 @@ const updateProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     const { userID, newUsername, url } = req.body;
     console.log('userID:', userID, 'newUsername:', newUsername, 'url:', url);
     try {
+        console.log("11111111111111111444444444444411111111111111111111111111111111111");
         const user = yield user_model_1.default.findById(userID);
+        console.log("2222222222222222222222222222222244444444444444422222222222222222222");
         if (!user) {
             return res.status(404).send('User not found');
         }
         // If there's a current image URL, remove the old image file
         if (user.imgUrl) {
-            const imagePath = path_1.default.join('./public/users', user.imgUrl.split('localhost:3000/')[1]);
+            console.log("333333333333333334444444444444444444444333333333333333");
+            const imagePath = path_1.default.join('./public/users', user.imgUrl.split('10.10.248.174:4000/')[1]);
+            console.log("4444444444444444444000000000000004444444444444444444444444444444444");
             fs_1.default.unlink(imagePath, (err) => {
                 if (err) {
                     console.error('Error deleting old image:', err);

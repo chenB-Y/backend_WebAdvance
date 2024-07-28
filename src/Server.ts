@@ -25,11 +25,19 @@ mongoose.connect(process.env.PROD_ENV = "production" ? process.env.DATABASE_URL_
     console.error('Connection error to DB:', err);
   });
 
-// CORS Configuration
+const allowedOrigins = ['https://10.10.248.174', 'https://node14.cs.colman.ac.il'];
+
 app.use(cors({
-  origin: 'https://10.10.248.174', // Allow requests from your frontend domain
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
-  allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+  origin: (origin, callback) => {
+    // Check if the origin is in the allowed list
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
 // Body parser middleware
@@ -60,8 +68,10 @@ else{
     key: fs.readFileSync(keyPath),
     cert: fs.readFileSync(certPath),
   };
+  var hostname = "0.0.0.0"
   var server = https.createServer(options, app);
-  server.listen(process.env.PORT, () => {
-  console.log(`Server is running on PORT:${process.env.PORT}`);
-});
+server.listen(4000, hostname);
+//  server.listen(4000,hostname, () => {
+//  console.log(`Server is running on PORT:${process.env.PORT}`);
+// });
 }
