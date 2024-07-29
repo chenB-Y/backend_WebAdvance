@@ -117,10 +117,12 @@ class BaseController<ModelInterface> {
         console.log('*********/************************:', mod.imageUrl);
         // If there's a current image URL, remove the old image file
         if (product.imageUrl !== mod.imageUrl) {
+          console.log("tttttttttttttttttttttyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyttttttttttttttttt")
           const imagePath = path.join(
             './public/products',
             product.imageUrl.split('10.10.248.174:4000/')[1]
           );
+          console.log(imagePath)
           fs.unlink(imagePath, (err) => {
             if (err) {
               console.error('Error deleting old image:', err);
@@ -165,10 +167,10 @@ class BaseController<ModelInterface> {
 
       const imageUrl = product.imageUrl;
       if (imageUrl) {
-        const filename = path.basename(imageUrl);
-        const imagePath = path.join(__dirname, '..', '..', 'public', 'products', filename);
-        console.log("path: "+ imagePath);
-        // Delete the image file
+         const imagePath = path.join(
+            './public/products',
+            product.imageUrl.split('10.10.248.174:4000/')[1]
+          );
         fs.unlink(imagePath, (err) => {
           if (err) {
             console.error(`Error deleting image file ${imageUrl}: ${err}`);
