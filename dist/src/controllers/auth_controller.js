@@ -255,7 +255,7 @@ const updateProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             return res.status(404).send('User not found');
         }
         // If there's a current image URL, remove the old image file
-        if (user.imgUrl) {
+        if (user.imgUrl !== url) {
             console.log("333333333333333334444444444444444444444333333333333333");
             const imagePath = path_1.default.join('./public/users', user.imgUrl.split('10.10.248.174:4000/')[1]);
             console.log("4444444444444444444000000000000004444444444444444444444444444444444");

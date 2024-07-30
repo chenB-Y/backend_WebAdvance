@@ -12,8 +12,12 @@ import fileRoute from './routes/file_route';
 import mongoose, { mongo } from 'mongoose';
 import groupRoute from './routes/group_route';
 import http from 'http'
+import { EventEmitter } from 'events';
 
 env.config();
+
+const sseEmitter = new EventEmitter();
+sseEmitter.setMaxListeners(100);
 
 const app = express();
 const PORT = 4000;
@@ -74,4 +78,23 @@ server.listen(4000, hostname);
 //  server.listen(4000,hostname, () => {
 //  console.log(`Server is running on PORT:${process.env.PORT}`);
 // });
+app.get('/events', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+
+  const onData = (data) => {
+    res.write(`data: ${JSON.stringify(data)}\n\n`);
+  };
+
+  sseEmitter.on('event', onData);
+
+  req.on('close', () => {
+    sseEmitter.removeListener('event', onData);
+  });
+});
+}
+
+export function broadcast(data) {
+  sseEmitter.emit('event', data);
 }

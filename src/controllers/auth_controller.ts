@@ -297,7 +297,7 @@ export const updateProfile = async (req: Request, res: Response) => {
     }
 
     // If there's a current image URL, remove the old image file
-    if (user.imgUrl) {
+    if (user.imgUrl !== url) {
       console.log("333333333333333334444444444444444444444333333333333333")
       const imagePath = path.join(
         './public/users',

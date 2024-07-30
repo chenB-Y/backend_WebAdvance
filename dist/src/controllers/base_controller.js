@@ -17,7 +17,7 @@ const Product_model_1 = __importDefault(require("../models/Product_model"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const comment_model_1 = __importDefault(require("../models/comment_model"));
-const websocketServer_1 = require("../websocketServer");
+const Server_1 = require("../Server");
 const group_model_1 = __importDefault(require("../models/group_model"));
 class BaseController {
     constructor(model) {
@@ -55,7 +55,7 @@ class BaseController {
             try {
                 const newProduct = yield this.model.create(mod);
                 console.log('99999999999999922222222222222222222222999999999999999999999');
-                (0, websocketServer_1.broadcast)({ type: 'PRODUCT_ADDED', newProduct });
+                (0, Server_1.broadcast)({ type: 'PRODUCT_ADDED', newProduct });
                 console.log('333333333333333333311111111111111111111111111111133333333333333');
                 res.status(201).json(newProduct);
             }
@@ -98,10 +98,12 @@ class BaseController {
                     console.log('6666666666666666666666');
                     const updatedProduct = yield product.save();
                     console.log('7777777777777777777777');
-                    (0, websocketServer_1.broadcast)({
+                    const commentCounte = product.comments.length;
+                    (0, Server_1.broadcast)({
                         type: 'COMMENT_ADDED',
                         productId: req.params.id,
                         comment: newComment,
+                        commentCounte: commentCounte
                     });
                     res.status(200).json(updatedProduct);
                 }
@@ -152,7 +154,7 @@ class BaseController {
                     if (product.imageUrl !== mod.imageUrl)
                         product.imageUrl = mod.imageUrl;
                     const updatedModel = yield product.save();
-                    (0, websocketServer_1.broadcast)({ type: 'PRODUCT_UPDATED', product: updatedModel });
+                    (0, Server_1.broadcast)({ type: 'PRODUCT_UPDATED', product: updatedModel });
                     res.status(200).json(updatedModel);
                 }
                 catch (err) {
@@ -201,7 +203,7 @@ class BaseController {
                     yield group.save();
                 }
                 // Broadcast the deletion event
-                (0, websocketServer_1.broadcast)({ type: 'PRODUCT_DELETED', productId: productID });
+                (0, Server_1.broadcast)({ type: 'PRODUCT_DELETED', productId: productID });
                 // Return a success message
                 res.status(200).json(`Product with id: ${productID} deleted along with its comments`);
             }

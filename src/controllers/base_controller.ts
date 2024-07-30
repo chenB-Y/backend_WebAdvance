@@ -4,7 +4,7 @@ import Product from '../models/Product_model';
 import fs from 'fs';
 import path from 'path';
 import Comment from '../models/comment_model';
-import { broadcast } from '../websocketServer';
+import { broadcast } from '../Server';
 import Group from '../models/group_model';
 
 class BaseController<ModelInterface> {
@@ -85,10 +85,12 @@ class BaseController<ModelInterface> {
         console.log('6666666666666666666666');
         const updatedProduct = await product.save();
         console.log('7777777777777777777777');
+        const commentCounte  =product.comments.length;
         broadcast({
           type: 'COMMENT_ADDED',
           productId: req.params.id,
           comment: newComment,
+          commentCounte: commentCounte
         });
         res.status(200).json(updatedProduct);
       } catch (err) {
