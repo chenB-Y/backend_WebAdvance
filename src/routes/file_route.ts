@@ -48,7 +48,6 @@ const base = 'https://10.10.248.174:4000/';
  */
 router.post(
   '/uploadUser',
-  authMiddleware,
   upload.single('file'),
   (req, res) => {
     try {

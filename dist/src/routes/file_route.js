@@ -48,7 +48,7 @@ const base = 'https://10.10.248.174:4000/';
  *       500:
  *         description: Failed to upload file
  */
-router.post('/uploadUser', auth_controller_1.authMiddleware, file_controller_1.upload.single('file'), (req, res) => {
+router.post('/uploadUser', file_controller_1.upload.single('file'), (req, res) => {
     try {
         const filePath = req.file.filename;
         res.status(200).send({ url: base + filePath });
