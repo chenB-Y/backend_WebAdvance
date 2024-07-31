@@ -41,8 +41,10 @@ app.use(cors({
     }
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'refreshtoken'],
 }));
+
+
 
 // Body parser middleware
 app.use(bodyParser.urlencoded({ extended: true }));

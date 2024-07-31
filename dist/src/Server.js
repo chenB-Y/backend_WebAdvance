@@ -43,7 +43,7 @@ app.use((0, cors_1.default)({
         }
     },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'refreshtoken'],
 }));
 // Body parser middleware
 app.use(body_parser_1.default.urlencoded({ extended: true }));

@@ -240,7 +240,6 @@ const logout = async (req: Request, res: Response) => {
           await user.save();
           return res.status(401).send('Invalid token');
         }
-        user.tokens = user.tokens.filter((token) => token !== refreshToken);
         await user.save();
         return res.status(200).send();
       }
