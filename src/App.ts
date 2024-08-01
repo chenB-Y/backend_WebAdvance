@@ -6,7 +6,6 @@ import path from 'path';
 env.config();
 import bodyParser from 'body-parser';
 import productRoute from './routes/product_route';
-import postRoute from './routes/post_route';
 import authRoute from './routes/auth_route';
 import fileRoute from './routes/file_route';
 import mongoose from 'mongoose';
@@ -34,7 +33,6 @@ const init = () => {
       });
       app.use('/auth', authRoute);
       app.use('/product', productRoute);
-      app.use('/post', postRoute);
       app.use('/file', fileRoute);
       app.use('/group', groupRoute);
       

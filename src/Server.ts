@@ -6,7 +6,6 @@ import env from 'dotenv';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import productRoute from './routes/product_route';
-import postRoute from './routes/post_route';
 import authRoute from './routes/auth_route';
 import fileRoute from './routes/file_route';
 import mongoose, { mongo } from 'mongoose';
@@ -53,7 +52,6 @@ app.use(bodyParser.json());
 // Routes
 app.use('/auth', authRoute);
 app.use('/product', productRoute);
-app.use('/post', postRoute);
 app.use('/file', fileRoute);
 app.use('/group', groupRoute);
 

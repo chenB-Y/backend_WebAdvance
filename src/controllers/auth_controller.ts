@@ -32,11 +32,20 @@ const googleSignin = async (req: Request, res: Response) => {
       }
       console.log('user:', user);
       const tokens = await generateTokens(user); //******************************/
+      if (user.groupID){
+        res.status(200).send({
+        username: user.username,
+        userID: user._id,
+        groupID: user.groupID,
+        ...tokens,
+      });
+      }else{
       res.status(200).send({
         username: user.username,
         userID: user._id,
         ...tokens,
       });
+    }
     }
   } catch (err) {
     return res.status(400).send(err.message);

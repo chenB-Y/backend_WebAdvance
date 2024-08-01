@@ -12,7 +12,6 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const product_route_1 = __importDefault(require("./routes/product_route"));
-const post_route_1 = __importDefault(require("./routes/post_route"));
 const auth_route_1 = __importDefault(require("./routes/auth_route"));
 const file_route_1 = __importDefault(require("./routes/file_route"));
 const mongoose_1 = __importDefault(require("mongoose"));
@@ -51,7 +50,6 @@ app.use(body_parser_1.default.json());
 // Routes
 app.use('/auth', auth_route_1.default);
 app.use('/product', product_route_1.default);
-app.use('/post', post_route_1.default);
 app.use('/file', file_route_1.default);
 app.use('/group', group_route_1.default);
 app.use(express_1.default.static('/home/st111/projectCode/backend_WebAdvance/public/products'));

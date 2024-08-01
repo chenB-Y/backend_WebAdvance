@@ -42,7 +42,12 @@ const googleSignin = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             }
             console.log('user:', user);
             const tokens = yield generateTokens(user); //******************************/
-            res.status(200).send(Object.assign({ username: user.username, userID: user._id }, tokens));
+            if (user.groupID) {
+                res.status(200).send(Object.assign({ username: user.username, userID: user._id, groupID: user.groupID }, tokens));
+            }
+            else {
+                res.status(200).send(Object.assign({ username: user.username, userID: user._id }, tokens));
+            }
         }
     }
     catch (err) {

@@ -16,7 +16,7 @@ exports.deleteGroup = exports.addProduct = exports.updateGroup = exports.getGrou
 const group_model_1 = __importDefault(require("../models/group_model"));
 const Product_model_1 = __importDefault(require("../models/Product_model"));
 const user_model_1 = __importDefault(require("../models/user_model"));
-const websocketServer_1 = require("../websocketServer");
+const Server_1 = require("../Server");
 // Create a new group
 const createGroup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -78,7 +78,7 @@ const addProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             const newProduct = yield Product_model_1.default.create(mod);
             group.products.push(newProduct.id);
             const updatedGroup = yield group.save();
-            (0, websocketServer_1.broadcast)({ type: 'PRODUCT_ADDED', newProduct });
+            (0, Server_1.broadcast)({ type: `PRODUCT_ADDED:${group._id}`, newProduct });
             res.status(200).json(updatedGroup);
         }
         catch (err) {
