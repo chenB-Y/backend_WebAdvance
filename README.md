@@ -37,6 +37,12 @@ The backend is built with Express and TypeScript, and it serves a Vite-built fro
 
 The backend implements JSON Web Tokens (JWT) for secure authentication and authorization. JWTs verify user identity and grant access to protected resources. Upon login, the server issues a JWT and a refresh token. The refresh token allows users to obtain a new JWT without re-authenticating, maintaining a seamless user experience. This system mitigates security risks associated with token expiration and ensures continuous protection of user sessions.
 
+### Production
+The backend is managed with PM2 for production to ensure smooth deployment and operation.
+```sh
+npm run prod
+```
+
 ### Setup
 
 1. Install dependencies:
@@ -85,6 +91,12 @@ The backend includes tests for adding, retrieving, and deleting comments on prod
 
 ```sh
 npm run test
+```
+
+### Complete Application
+The Shopping List App combines both the backend and frontend components to provide a full-featured shopping management system. By integrating these parts, users benefit from a cohesive and efficient application for managing their shopping needs.
+```sh
+git@github.com:chenB-Y/frontend_WebAdvance.git
 ```
 
 ### Contributing
