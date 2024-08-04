@@ -17,13 +17,13 @@ The Shopping List App is a web application designed to help users manage and sha
 ├── backend <br>
 │ ├── public <br>
 │ │ ├── products <br>
-│ │ └── users
-│ └── src
-│ ├── controller
-│ ├── model
-│ ├── routes
-│ ├── tests
-│ └── server.ts
+│ │ └── users <br>
+│ └── src <br>
+│ ├── controller <br>
+│ ├── model <br>
+│ ├── routes <br>
+│ ├── tests <br>
+│ └── server.ts <br>
 
 
 ## Backend
