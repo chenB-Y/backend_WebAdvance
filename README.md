@@ -14,9 +14,9 @@ The Shopping List App is a web application designed to help users manage and sha
 - **Google Login**: Log in using your Google account.
 
 ## Project Structure
-├── backend
-│ ├── public
-│ │ ├── products
+├── backend <br>
+│ ├── public <br>
+│ │ ├── products <br>
 │ │ └── users
 │ └── src
 │ ├── controller
@@ -71,5 +71,3 @@ npm test
 ### JWT and Refresh Tokens
 
 The backend implements JSON Web Tokens (JWT) for secure authentication and authorization. JWTs verify user identity and grant access to protected resources. Upon login, the server issues a JWT and a refresh token. The refresh token allows users to obtain a new JWT without re-authenticating, maintaining a seamless user experience. This system mitigates security risks associated with token expiration and ensures continuous protection of user sessions.
-
-Frontend
