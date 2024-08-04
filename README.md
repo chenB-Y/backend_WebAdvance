@@ -33,6 +33,10 @@ The Shopping List App is a web application designed to help users manage and sha
 
 The backend is built with Express and TypeScript, and it serves a Vite-built frontend. It supports HTTPS for secure communication, and the server runs on port 4000. The backend uses Mongoose for MongoDB interactions and includes models for `comment`, `group`, `product`, and `user`.
 
+### JWT and Refresh Tokens
+
+The backend implements JSON Web Tokens (JWT) for secure authentication and authorization. JWTs verify user identity and grant access to protected resources. Upon login, the server issues a JWT and a refresh token. The refresh token allows users to obtain a new JWT without re-authenticating, maintaining a seamless user experience. This system mitigates security risks associated with token expiration and ensures continuous protection of user sessions.
+
 ### Setup
 
 1. Install dependencies:
@@ -64,9 +68,9 @@ The backend is built with Express and TypeScript, and it serves a Vite-built fro
 
 The backend API is documented using Swagger. Access the documentation at `http://localhost:4000/api-docs`.
 
-![Screenshot 2024-08-04 131316](https://github.com/user-attachments/assets/61e967b7-4d7f-46c6-8aa6-7d24e4427de1)
-
 ![Screenshot 2024-08-04 131220](https://github.com/user-attachments/assets/ea0b1fc0-8d4b-4f10-94b2-9abe06a07385)
+
+![Screenshot 2024-08-04 131316](https://github.com/user-attachments/assets/61e967b7-4d7f-46c6-8aa6-7d24e4427de1)
 
 
 ### Testing
@@ -76,6 +80,3 @@ The backend includes tests for adding, retrieving, and deleting comments on prod
 ```sh
 npm run test
 ```
-### JWT and Refresh Tokens
-
-The backend implements JSON Web Tokens (JWT) for secure authentication and authorization. JWTs verify user identity and grant access to protected resources. Upon login, the server issues a JWT and a refresh token. The refresh token allows users to obtain a new JWT without re-authenticating, maintaining a seamless user experience. This system mitigates security risks associated with token expiration and ensures continuous protection of user sessions.
