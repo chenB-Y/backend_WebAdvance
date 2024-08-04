@@ -2,6 +2,9 @@
 
 The Shopping List App is a web application designed to help users manage and share shopping lists. Users can create new shopping groups, join existing ones, and add products with various details to their lists. The app provides a user-friendly interface for efficient shopping list management, supported by real-time updates and robust security features.
 
+![Screenshot 2024-08-04 140740](https://github.com/user-attachments/assets/ae9ed3ae-f999-4fec-8f84-6f60561ec2e0)
+
+
 ## Features
 
 - **User Registration and Login**: Users can register new accounts and log in securely.
@@ -60,6 +63,11 @@ The backend is built with Express and TypeScript, and it serves a Vite-built fro
 ### API Documentation
 
 The backend API is documented using Swagger. Access the documentation at `http://localhost:4000/api-docs`.
+
+![Screenshot 2024-08-04 131316](https://github.com/user-attachments/assets/61e967b7-4d7f-46c6-8aa6-7d24e4427de1)
+
+![Screenshot 2024-08-04 131220](https://github.com/user-attachments/assets/ea0b1fc0-8d4b-4f10-94b2-9abe06a07385)
+
 
 ### Testing
 
