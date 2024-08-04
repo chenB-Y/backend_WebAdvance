@@ -1,4 +1,4 @@
-# Shopping List App
+# Shopping List App - Backend
 
 The Shopping List App is a web application designed to help users manage and share shopping lists. Users can create new shopping groups, join existing ones, and add products with various details to their lists. The app provides a user-friendly interface for efficient shopping list management, supported by real-time updates and robust security features.
 
