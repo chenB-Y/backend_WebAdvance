@@ -64,6 +64,12 @@ The backend implements JSON Web Tokens (JWT) for secure authentication and autho
     npm run dev
     ```
 
+### Production Setup
+The frontend is managed and run with PM2 for production environments.
+    ```sh
+    npm run prod
+    ```
+
 ### API Documentation
 
 The backend API is documented using Swagger. Access the documentation at `http://localhost:4000/api-docs`.
