@@ -66,7 +66,7 @@ The backend API is documented using Swagger. Access the documentation at `http:/
 The backend includes tests for adding, retrieving, and deleting comments on products. Tests are implemented using Supertest and can be run with the following command:
 
 ```sh
-npm test
+npm run test
 ```
 ### JWT and Refresh Tokens
 
